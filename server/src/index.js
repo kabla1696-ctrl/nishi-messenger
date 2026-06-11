@@ -36,15 +36,12 @@ const onlineUsers = new Map();
 // ============ AUTH ============
 app.post('/api/auth/register', (req, res) => {
   try {
-    const { phone, name } = req.body;
-    if (!phone || !name) return res.status(400).json({ error: 'Name and phone required' });
-    
-    const existing = db.get('users').find({ phone }).value();
-    if (existing) return res.status(400).json({ error: 'Phone already registered' });
+    const { name } = req.body;
+    if (!name || name.trim().length === 0) return res.status(400).json({ error: 'Name is required' });
 
     const avatars = ['👤','👨','👩','🧑','👨‍💻','👩‍💻','🧑‍🎨','🚀'];
     const user = {
-      id: uuidv4(), phone, name,
+      id: uuidv4(), name: name.trim(),
       avatar: avatars[Math.floor(Math.random() * avatars.length)],
       status: 'Hey there! I am using Nishi',
       createdAt: new Date().toISOString()
@@ -57,9 +54,9 @@ app.post('/api/auth/register', (req, res) => {
 
 app.post('/api/auth/login', (req, res) => {
   try {
-    const { phone } = req.body;
-    if (!phone) return res.status(400).json({ error: 'Phone required' });
-    const user = db.get('users').find({ phone }).value();
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: 'User ID required' });
+    const user = db.get('users').find({ id: userId }).value();
     if (!user) return res.status(404).json({ error: 'User not found' });
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '30d' });
     res.json({ success: true, token, user });
