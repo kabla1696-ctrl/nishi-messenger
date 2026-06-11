@@ -108,6 +108,10 @@
             <span id="chat-status" class="status-dot offline">offline</span>
           </div>
         </div>
+        <div class="call-buttons">
+          <button onclick="startCall('audio')" class="call-btn-glass" title="Audio Call">📞</button>
+          <button onclick="startCall('video')" class="call-btn-glass" title="Video Call">📹</button>
+        </div>
         <button onclick="toggleUniverse()" id="universe-btn" class="universe-btn-glass">🌍</button>
       </div>
 
@@ -129,7 +133,43 @@
       </div>
     </div>
 
-    <!-- Ghost Drop Screen -->
+    
+    <!-- Call Screen -->
+    <div id="call-screen" class="screen" style="display:none;">
+      <div class="call-container">
+        <div class="call-status-bar">
+          <span id="call-status-text">Calling...</span>
+          <span id="call-timer">00:00</span>
+        </div>
+        <div class="call-avatar-big" id="call-avatar-big">👤</div>
+        <div class="call-name-big" id="call-name-big">Unknown</div>
+        <div class="call-type-label" id="call-type-label">Audio Call</div>
+        <div class="call-video-container" id="call-video-container" style="display:none;">
+          <video id="remote-video" autoplay playsinline></video>
+          <video id="local-video" autoplay playsinline muted></video>
+        </div>
+        <div class="call-actions">
+          <button onclick="toggleMute()" id="mute-btn" class="call-action-btn">🎤</button>
+          <button onclick="toggleVideo()" id="video-toggle-btn" class="call-action-btn">📷</button>
+          <button onclick="endCall()" class="call-action-btn end-call">📞</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Incoming Call Popup -->
+    <div id="incoming-call-popup" class="incoming-call-popup" style="display:none;">
+      <div class="incoming-call-content">
+        <div class="incoming-call-avatar" id="incoming-call-avatar">👤</div>
+        <div class="incoming-call-name" id="incoming-call-name">Someone</div>
+        <div class="incoming-call-type" id="incoming-call-type">Audio Call</div>
+        <div class="incoming-call-actions">
+          <button onclick="declineCall()" class="call-decline-btn">❌</button>
+          <button onclick="acceptCall()" class="call-accept-btn">📞</button>
+        </div>
+      </div>
+    </div>
+
+<!-- Ghost Drop Screen -->
     <div id="ghost-drop-screen" class="screen">
       <div class="screen-header">
         <button onclick="showScreen('home-screen')" class="back-btn-glass">←</button>

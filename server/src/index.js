@@ -277,6 +277,36 @@ io.on('connection', (socket) => {
   socket.on('typing', (data) => socket.to(data.chatId).emit('user_typing', data));
   socket.on('stop_typing', (data) => socket.to(data.chatId).emit('user_stop_typing', data));
 
+
+  // Video/Audio Call Signaling
+  socket.on('call_offer', (data) => {
+    const targetSocketId = onlineUsers.get(data.to);
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('call_offer', data);
+    }
+  });
+
+  socket.on('call_answer', (data) => {
+    const targetSocketId = onlineUsers.get(data.to);
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('call_answer', data);
+    }
+  });
+
+  socket.on('ice_candidate', (data) => {
+    const targetSocketId = onlineUsers.get(data.to);
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('ice_candidate', data);
+    }
+  });
+
+  socket.on('call_ended', (data) => {
+    const targetSocketId = onlineUsers.get(data.to);
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('call_ended', data);
+    }
+  });
+
   socket.on('disconnect', () => {
     for (const [userId, socketId] of onlineUsers.entries()) {
       if (socketId === socket.id) {

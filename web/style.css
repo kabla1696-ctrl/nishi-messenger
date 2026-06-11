@@ -1043,3 +1043,202 @@ html, body {
   from { width: 0; height: 0; opacity: 1; }
   to { width: 200px; height: 200px; opacity: 0; }
 }
+
+/* ============ VIDEO/AUDIO CALL ============ */
+.call-buttons {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.call-btn-glass {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.05);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+.call-btn-glass:hover {
+  background: rgba(108,99,255,0.2);
+  border-color: rgba(108,99,255,0.4);
+}
+
+/* Call Screen */
+.call-container {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #0A0A1A 0%, #1a1a3e 50%, #0A0A1A 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.call-status-bar {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+}
+.call-avatar-big {
+  font-size: 80px;
+  margin-bottom: 16px;
+  animation: pulse-call 2s infinite;
+}
+@keyframes pulse-call {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.call-name-big {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}
+.call-type-label {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 40px;
+}
+
+/* Video containers */
+.call-video-container {
+  position: absolute;
+  inset: 0;
+  background: #000;
+}
+#remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#local-video {
+  position: absolute;
+  bottom: 120px;
+  right: 20px;
+  width: 140px;
+  height: 200px;
+  border-radius: 16px;
+  border: 2px solid rgba(108,99,255,0.5);
+  object-fit: cover;
+  z-index: 10;
+}
+
+/* Call action buttons */
+.call-actions {
+  position: absolute;
+  bottom: 60px;
+  display: flex;
+  gap: 24px;
+  z-index: 11;
+}
+.call-action-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+}
+.call-action-btn:hover {
+  transform: scale(1.1);
+}
+.call-action-btn.muted {
+  background: rgba(255,59,48,0.3);
+  border: 2px solid rgba(255,59,48,0.5);
+}
+.end-call {
+  background: linear-gradient(135deg, #FF3B30, #FF2D55) !important;
+  width: 72px;
+  height: 72px;
+  font-size: 32px;
+}
+.end-call:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 30px rgba(255,59,48,0.5);
+}
+
+/* Incoming Call Popup */
+.incoming-call-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s;
+}
+.incoming-call-content {
+  text-align: center;
+  padding: 40px;
+}
+.incoming-call-avatar {
+  font-size: 80px;
+  animation: pulse-call 1.5s infinite;
+  margin-bottom: 16px;
+}
+.incoming-call-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}
+.incoming-call-type {
+  font-size: 16px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 40px;
+}
+.incoming-call-actions {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+}
+.call-decline-btn, .call-accept-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.call-decline-btn {
+  background: linear-gradient(135deg, #FF3B30, #FF2D55);
+}
+.call-accept-btn {
+  background: linear-gradient(135deg, #34C759, #30D158);
+  animation: pulse-accept 1.5s infinite;
+}
+@keyframes pulse-accept {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52,199,89,0.4); }
+  50% { box-shadow: 0 0 0 20px rgba(52,199,89,0); }
+}
+.call-decline-btn:hover, .call-accept-btn:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .call-buttons { gap: 4px; margin-right: 4px; }
+  .call-btn-glass { width: 34px; height: 34px; font-size: 16px; }
+  #local-video { width: 100px; height: 140px; bottom: 140px; right: 12px; }
+}
