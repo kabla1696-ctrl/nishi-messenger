@@ -3,270 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>👻 Nishi</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
+  <title>Nishi 👻</title>
+  <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0A0A1A">
-  <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <!-- Animated Background -->
-  <canvas id="bg-canvas"></canvas>
+  <!-- Particle Background -->
+  <canvas id="particles"></canvas>
 
-  <!-- Toast Container -->
-  <div id="toast-container"></div>
-
-  <div id="app">
-    <!-- Splash Screen -->
-    <div id="splash-screen" class="screen active">
-      <div class="splash-content">
-        <div class="splash-ghost-wrap">
-          <div class="splash-ghost">👻</div>
-          <div class="splash-glow"></div>
-        </div>
-        <h1 class="splash-title">Nishi</h1>
-        <p class="splash-subtitle">Messages that live, breathe, and disappear</p>
-        <div class="splash-loader">
-          <div class="loader-bar"></div>
-        </div>
+  <!-- Auth Screen -->
+  <div id="auth-screen" class="screen active">
+    <div class="auth-container">
+      <div class="logo-3d">
+        <div class="logo-ring"></div>
+        <div class="logo-ring ring-2"></div>
+        <div class="logo-ring ring-3"></div>
+        <div class="logo-ghost">👻</div>
       </div>
-    </div>
-
-    <!-- Auth Screen -->
-    <div id="auth-screen" class="screen">
-      <div class="auth-container glass-card">
-        <div class="auth-logo-wrap">
-          <div class="auth-ghost">👻</div>
-          <div class="auth-ring"></div>
+      <h1 class="app-title">Nishi</h1>
+      <p class="app-subtitle">Where messages come alive</p>
+      <div class="auth-form">
+        <div class="input-3d">
+          <input type="text" id="auth-name" placeholder="Your name" autocomplete="off">
+          <div class="input-glow"></div>
         </div>
-        <h1 class="auth-title">Welcome to <span class="gradient-text">Nishi</span></h1>
-        <p class="auth-subtitle">Where messages come alive</p>
-        
-        <div id="auth-step1" class="auth-form">
-          <div class="input-group">
-            <span class="input-icon">👤</span>
-            <input type="text" id="auth-name" placeholder="Your name" class="glass-input">
-          </div>
-          <div class="input-group">
-            <span class="input-icon">📱</span>
-            <input type="tel" id="auth-phone" placeholder="Phone number" class="glass-input">
-          </div>
-          <button onclick="registerUser()" class="btn-glow">
-            <span>Get Started</span>
-            <div class="btn-glow-effect"></div>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Home Screen -->
-    <div id="home-screen" class="screen">
-      <div class="home-header">
-        <div class="header-left">
-          <div class="ghost-mini">👻</div>
-          <h1 class="header-title">Nishi</h1>
-        </div>
-        <div class="header-right">
-          <button onclick="showScreen('ghost-drop-screen')" class="icon-btn-glass">
-            <span>🗺️</span>
-          </button>
-          <button onclick="showScreen('settings-screen')" class="icon-btn-glass">
-            <span>⚙️</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="chat-list" id="chat-list"></div>
-
-      <button onclick="showScreen('contacts-screen')" class="fab-main">
-        <span class="fab-icon">+</span>
-        <div class="fab-glow"></div>
-      </button>
-    </div>
-
-    <!-- Contacts Screen -->
-    <div id="contacts-screen" class="screen">
-      <div class="screen-header">
-        <button onclick="showScreen('home-screen')" class="back-btn-glass">←</button>
-        <h1>New Chat</h1>
-      </div>
-      <div id="contacts-list" class="contacts-list"></div>
-    </div>
-
-    <!-- Chat Screen -->
-    <div id="chat-screen" class="screen">
-      <div class="chat-screen-header">
-        <button onclick="showScreen('home-screen')" class="back-btn-glass">←</button>
-        <div class="chat-user-info">
-          <div class="avatar-ring" id="chat-avatar-ring">
-            <span id="chat-avatar" class="chat-avatar">👤</span>
-          </div>
-          <div>
-            <h2 id="chat-name">Chat</h2>
-            <span id="chat-status" class="status-dot offline">offline</span>
-          </div>
-        </div>
-        <div class="call-buttons">
-          <button onclick="startCall('audio')" class="call-btn-glass" title="Audio Call">📞</button>
-          <button onclick="startCall('video')" class="call-btn-glass" title="Video Call">📹</button>
-        </div>
-        <button onclick="toggleUniverse()" id="universe-btn" class="universe-btn-glass">🌍</button>
-      </div>
-
-      <div id="messages-container" class="messages-container"></div>
-
-      <div id="typing-indicator" class="typing-indicator" style="display:none;">
-        <div class="typing-dots"><span></span><span></span><span></span></div>
-        <span>typing</span>
-      </div>
-
-      <div class="chat-input-bar">
-        <button onclick="toggleScreenshotTrap()" id="trap-btn" class="trap-btn-glass">📸</button>
-        <div class="input-bar-wrap">
-          <input type="text" id="message-input" placeholder="Message..." class="chat-input-glass" onkeypress="handleKeyPress(event)">
-        </div>
-        <button onclick="sendMessage()" class="send-btn-glass">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        <button onclick="login()" class="btn-3d btn-primary">
+          <span>Get Started</span>
+          <div class="btn-shine"></div>
         </button>
-      </div>
-    </div>
-
-    
-    <!-- Call Screen -->
-    <div id="call-screen" class="screen" style="display:none;">
-      <div class="call-container">
-        <div class="call-status-bar">
-          <span id="call-status-text">Calling...</span>
-          <span id="call-timer">00:00</span>
-        </div>
-        <div class="call-avatar-big" id="call-avatar-big">👤</div>
-        <div class="call-name-big" id="call-name-big">Unknown</div>
-        <div class="call-type-label" id="call-type-label">Audio Call</div>
-        <div class="call-video-container" id="call-video-container" style="display:none;">
-          <video id="remote-video" autoplay playsinline></video>
-          <video id="local-video" autoplay playsinline muted></video>
-        </div>
-        <div class="call-actions">
-          <button onclick="toggleMute()" id="mute-btn" class="call-action-btn">🎤</button>
-          <button onclick="toggleVideo()" id="video-toggle-btn" class="call-action-btn">📷</button>
-          <button onclick="endCall()" class="call-action-btn end-call">📞</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Incoming Call Popup -->
-    <div id="incoming-call-popup" class="incoming-call-popup" style="display:none;">
-      <div class="incoming-call-content">
-        <div class="incoming-call-avatar" id="incoming-call-avatar">👤</div>
-        <div class="incoming-call-name" id="incoming-call-name">Someone</div>
-        <div class="incoming-call-type" id="incoming-call-type">Audio Call</div>
-        <div class="incoming-call-actions">
-          <button onclick="declineCall()" class="call-decline-btn">❌</button>
-          <button onclick="acceptCall()" class="call-accept-btn">📞</button>
-        </div>
-      </div>
-    </div>
-
-<!-- Ghost Drop Screen -->
-    <div id="ghost-drop-screen" class="screen">
-      <div class="screen-header">
-        <button onclick="showScreen('home-screen')" class="back-btn-glass">←</button>
-        <h1>🗺️ Ghost Drop</h1>
-      </div>
-
-      <div class="ghost-drop-form glass-card">
-        <textarea id="drop-content" placeholder="Write a secret message..." class="glass-textarea"></textarea>
-        
-        <div class="location-badge">
-          <span class="pulse-dot"></span>
-          <span id="drop-location">Getting location...</span>
-        </div>
-
-        <div class="drop-grid">
-          <div class="drop-option glass-card-mini">
-            <span class="option-label">⏱️ Expiry</span>
-            <select id="drop-expiry" class="glass-select">
-              <option value="1">1 hour</option>
-              <option value="6">6 hours</option>
-              <option value="24" selected>24 hours</option>
-              <option value="72">3 days</option>
-            </select>
-          </div>
-          <div class="drop-option glass-card-mini">
-            <span class="option-label">📏 Radius</span>
-            <select id="drop-radius" class="glass-select">
-              <option value="10">10m</option>
-              <option value="25">25m</option>
-              <option value="50" selected>50m</option>
-              <option value="100">100m</option>
-            </select>
-          </div>
-        </div>
-
-        <button onclick="createGhostDrop()" class="btn-glow">
-          <span>👻 Create Ghost Drop</span>
-          <div class="btn-glow-effect"></div>
-        </button>
-      </div>
-
-      <div class="ghost-drops-list" id="ghost-drops-list"></div>
-    </div>
-
-    <!-- Settings Screen -->
-    <div id="settings-screen" class="screen">
-      <div class="screen-header">
-        <button onclick="showScreen('home-screen')" class="back-btn-glass">←</button>
-        <h1>⚙️ Settings</h1>
-      </div>
-
-      <div class="settings-content">
-        <div class="profile-card glass-card">
-          <div class="profile-avatar-lg">👤</div>
-          <div class="profile-info">
-            <h2 id="settings-name">-</h2>
-            <p id="settings-phone">-</p>
-          </div>
-        </div>
-
-        <div class="settings-section glass-card">
-          <h3>🫥 Vanish Mode</h3>
-          <div class="setting-row">
-            <span>Auto-delete near friends</span>
-            <label class="toggle-switch">
-              <input type="checkbox" id="vanish-toggle" onchange="toggleVanishMode()">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-          <div class="setting-row">
-            <span>Distance threshold</span>
-            <select id="vanish-threshold" class="glass-select-sm">
-              <option value="5">5m</option>
-              <option value="10" selected>10m</option>
-              <option value="20">20m</option>
-              <option value="50">50m</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="settings-section glass-card">
-          <h3>🌫️ Ambient Presence</h3>
-          <div class="setting-row">
-            <span>Show what you're doing</span>
-            <label class="toggle-switch">
-              <input type="checkbox" id="ambient-toggle" checked onchange="toggleAmbient()">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <button onclick="logout()" class="btn-danger-glass">Log Out</button>
       </div>
     </div>
   </div>
 
+  <!-- Home Screen -->
+  <div id="home-screen" class="screen">
+    <div class="home-header">
+      <div class="logo-mini">👻</div>
+      <h1 class="home-title">Nishi</h1>
+      <div class="header-actions">
+        <button onclick="showScreen('profile-screen')" class="icon-btn-3d">👤</button>
+      </div>
+    </div>
+    <div id="users-list" class="users-grid"></div>
+  </div>
+
+  <!-- Chat Screen -->
+  <div id="chat-screen" class="screen">
+    <div class="chat-header-3d">
+      <button onclick="showScreen('home-screen')" class="back-btn-3d">←</button>
+      <div class="chat-user-3d" id="chat-user-info">
+        <div class="avatar-3d" id="chat-avatar">👤</div>
+        <div>
+          <h2 id="chat-name">Chat</h2>
+          <span id="chat-status" class="status-3d">online</span>
+        </div>
+      </div>
+      <div class="chat-actions-3d">
+        <button onclick="startCall('audio')" class="call-btn-3d audio">📞</button>
+        <button onclick="startCall('video')" class="call-btn-3d video">📹</button>
+      </div>
+    </div>
+    <div id="messages-container" class="messages-3d"></div>
+    <div class="chat-input-3d">
+      <div class="input-wrap-3d">
+        <input type="text" id="message-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendMessage()">
+      </div>
+      <button onclick="sendMessage()" class="send-btn-3d">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile Screen -->
+  <div id="profile-screen" class="screen">
+    <div class="profile-header-3d">
+      <button onclick="showScreen('home-screen')" class="back-btn-3d">←</button>
+      <h2>Profile</h2>
+    </div>
+    <div class="profile-content">
+      <div class="profile-avatar-3d">
+        <div class="avatar-large-3d" id="profile-avatar">👻</div>
+      </div>
+      <h2 id="profile-name" class="profile-name-3d"></h2>
+      <button onclick="logout()" class="btn-3d btn-danger">
+        <span>Logout</span>
+        <div class="btn-shine"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Call Screen -->
+  <div id="call-screen" class="screen">
+    <div class="call-container-3d">
+      <div class="call-bg-animation"></div>
+      <div class="call-status-3d">
+        <span id="call-status-text">Calling...</span>
+        <span id="call-timer">00:00</span>
+      </div>
+      <div class="call-avatar-3d" id="call-avatar-big">👤</div>
+      <div class="call-name-3d" id="call-name-big">Unknown</div>
+      <video id="remote-video" autoplay playsinline></video>
+      <video id="local-video" autoplay playsinline muted></video>
+      <div class="call-actions-3d">
+        <button onclick="toggleMute()" id="mute-btn" class="call-action-3d">🎤</button>
+        <button onclick="toggleVideo()" id="video-toggle-btn" class="call-action-3d">📷</button>
+        <button onclick="endCall()" class="call-action-3d end">📞</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Incoming Call -->
+  <div id="incoming-call" class="incoming-call-3d" style="display:none">
+    <div class="incoming-content-3d">
+      <div class="incoming-avatar-3d" id="incoming-avatar">👤</div>
+      <div class="incoming-name-3d" id="incoming-name">Someone</div>
+      <div class="incoming-type-3d" id="incoming-type">Audio Call</div>
+      <div class="incoming-actions-3d">
+        <button onclick="declineCall()" class="decline-btn-3d">❌</button>
+        <button onclick="acceptCall()" class="accept-btn-3d">📞</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast-3d"></div>
+
   <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>
