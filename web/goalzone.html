@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ GOAL ZONE — Live Football Scores</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+    <link rel="stylesheet" href="goalzone-style.css">
+</head>
+<body>
+    <!-- Particles -->
+    <canvas id="particles"></canvas>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">⚽</div>
+            <div>
+                <h1>GOAL ZONE</h1>
+                <span class="subtitle">LIVE FOOTBALL SCORES</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="live-badge" id="liveBadge">
+                <span class="live-dot"></span>
+                LIVE
+            </div>
+            <div class="auto-refresh">
+                Auto-refresh: <span id="refreshTimer">30</span>s
+            </div>
+        </div>
+    </header>
+
+    <!-- Nav Tabs -->
+    <nav class="nav-tabs">
+        <button class="tab active" data-tab="live" onclick="switchTab('live')">
+            🔴 LIVE NOW
+        </button>
+        <button class="tab" data-tab="schedule" onclick="switchTab('schedule')">
+            📅 SCHEDULE
+        </button>
+        <button class="tab" data-tab="standings" onclick="switchTab('standings')">
+            🏆 STANDINGS
+        </button>
+        <button class="tab" data-tab="teams" onclick="switchTab('teams')">
+            👥 TEAMS
+        </button>
+    </nav>
+
+    <!-- AdSense Banner (Top) -->
+    <div class="ad-banner" id="adTop">
+        <div class="ad-placeholder">
+            <span class="ad-label">Advertisement</span>
+            <div class="ad-content">Your Ad Here — Google AdSense</div>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <main class="main-content">
+        <!-- LIVE TAB -->
+        <section id="tab-live" class="tab-content active">
+            <div class="section-header">
+                <h2>🔴 Live Matches</h2>
+                <span class="match-count" id="liveCount">0 matches</span>
+            </div>
+            <div id="liveMatches" class="matches-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading live matches...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCHEDULE TAB -->
+        <section id="tab-schedule" class="tab-content">
+            <div class="section-header">
+                <h2>📅 Match Schedule</h2>
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="filterSchedule('all')">All</button>
+                    <button class="filter-btn" onclick="filterSchedule('today')">Today</button>
+                    <button class="filter-btn" onclick="filterSchedule('tomorrow')">Tomorrow</button>
+                </div>
+            </div>
+            <div id="scheduleMatches" class="matches-grid"></div>
+        </section>
+
+        <!-- STANDINGS TAB -->
+        <section id="tab-standings" class="tab-content">
+            <div class="section-header">
+                <h2>🏆 Group Standings</h2>
+            </div>
+            <div id="standingsContent" class="standings-grid"></div>
+        </section>
+
+        <!-- TEAMS TAB -->
+        <section id="tab-teams" class="tab-content">
+            <div class="section-header">
+                <h2>👥 All Teams</h2>
+                <div class="search-box">
+                    <input type="text" id="teamSearch" placeholder="Search team..." oninput="searchTeams(this.value)">
+                </div>
+            </div>
+            <div id="teamsContent" class="teams-grid"></div>
+        </section>
+    </main>
+
+    <!-- AdSense Banner (Bottom) -->
+    <div class="ad-banner">
+        <div class="ad-placeholder">
+            <span class="ad-label">Advertisement</span>
+            <div class="ad-content">Your Ad Here — Google AdSense</div>
+        </div>
+    </div>
+
+    <!-- Affiliate Section -->
+    <section class="affiliate-section">
+        <h3>🛍️ Football Gear</h3>
+        <div class="affiliate-grid">
+            <a href="https://www.amazon.com/s?k=football+jersey+2026" target="_blank" class="affiliate-card">
+                <div class="affiliate-icon">👕</div>
+                <div class="affiliate-title">Jerseys</div>
+                <div class="affiliate-price">From $29.99</div>
+            </a>
+            <a href="https://www.amazon.com/s?k=football+boots" target="_blank" class="affiliate-card">
+                <div class="affiliate-icon">⚽</div>
+                <div class="affiliate-title">Footballs</div>
+                <div class="affiliate-price">From $19.99</div>
+            </a>
+            <a href="https://www.amazon.com/s?k=world+cup+2026+merchandise" target="_blank" class="affiliate-card">
+                <div class="affiliate-icon">🏆</div>
+                <div class="affiliate-title">Merchandise</div>
+                <div class="affiliate-price">From $9.99</div>
+            </a>
+            <a href="https://www.amazon.com/s?k=football+shoes" target="_blank" class="affiliate-card">
+                <div class="affiliate-icon">👟</div>
+                <div class="affiliate-title">Shoes</div>
+                <div class="affiliate-price">From $49.99</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="footer-logo">⚽</span>
+                <span>GOAL ZONE</span>
+            </div>
+            <div class="footer-links">
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </div>
+            <div class="footer-copy">
+                © 2026 Goal Zone — Live Football Scores. Not affiliated with FIFA.
+            </div>
+        </div>
+    </footer>
+
+    <script src="goalzone-app.js"></script>
+</body>
+</html>
