@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>👻 Nishi Messenger</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6C63FF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+<body>
+  <div id="app">
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="screen active">
+      <div class="splash-content">
+        <div class="splash-logo">👻</div>
+        <h1 class="splash-title">Nishi</h1>
+        <p class="splash-subtitle">Messages that live, breathe, and disappear</p>
+        <div class="splash-loader"></div>
+      </div>
+    </div>
+
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="screen">
+      <div class="auth-container">
+        <div class="auth-logo">👻</div>
+        <h1>Nishi-তে স্বাগতম</h1>
+        <p>ফোন নম্বর দিয়ে শুরু করুন</p>
+        
+        <div id="auth-step1">
+          <input type="text" id="auth-name" placeholder="আপনার নাম" class="input-field">
+          <input type="tel" id="auth-phone" placeholder="ফোন নম্বর (01XXXXXXXXX)" class="input-field">
+          <button onclick="registerUser()" class="btn-primary">শুরু করুন →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen">
+      <div class="app-header">
+        <h1>👻 Nishi</h1>
+        <div class="header-actions">
+          <button onclick="showScreen('ghost-drop-screen')" class="icon-btn">🗺️</button>
+          <button onclick="showScreen('settings-screen')" class="icon-btn">⚙️</button>
+        </div>
+      </div>
+
+      <div class="chat-list" id="chat-list">
+        <!-- Chats will be loaded here -->
+      </div>
+
+      <button onclick="showScreen('contacts-screen')" class="fab">+</button>
+    </div>
+
+    <!-- Contacts Screen -->
+    <div id="contacts-screen" class="screen">
+      <div class="app-header">
+        <button onclick="showScreen('home-screen')" class="back-btn">←</button>
+        <h1>নতুন চ্যাট</h1>
+      </div>
+      <div id="contacts-list" class="contacts-list">
+        <!-- Contacts will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat-screen" class="screen">
+      <div class="chat-header">
+        <button onclick="showScreen('home-screen')" class="back-btn">←</button>
+        <div class="chat-header-info">
+          <span id="chat-avatar" class="chat-avatar">👤</span>
+          <div>
+            <h2 id="chat-name">Chat</h2>
+            <span id="chat-status" class="online-status">offline</span>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button onclick="toggleUniverse()" id="universe-btn" class="universe-toggle">🌍</button>
+        </div>
+      </div>
+
+      <div id="messages-container" class="messages-container">
+        <!-- Messages will be loaded here -->
+      </div>
+
+      <div id="typing-indicator" class="typing-indicator" style="display:none;">
+        <span class="typing-dots">•••</span> টাইপ করছে...
+      </div>
+
+      <div class="chat-input-container">
+        <button onclick="toggleScreenshotTrap()" id="trap-btn" class="trap-btn">📸</button>
+        <input type="text" id="message-input" placeholder="মেসেজ লিখুন..." class="message-input" onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()" class="send-btn">➤</button>
+      </div>
+    </div>
+
+    <!-- Ghost Drop Screen -->
+    <div id="ghost-drop-screen" class="screen">
+      <div class="app-header">
+        <button onclick="showScreen('home-screen')" class="back-btn">←</button>
+        <h1>🗺️ Ghost Drop</h1>
+      </div>
+
+      <div class="ghost-drop-form">
+        <textarea id="drop-content" placeholder="গোপন মেসেজ লিখুন..." class="input-field"></textarea>
+        
+        <div class="location-info">
+          <p>📍 আপনার অবস্থান:</p>
+          <p id="drop-location" class="location-text">লোড হচ্ছে...</p>
+        </div>
+
+        <div class="drop-options">
+          <label>
+            <span>⏱️ মেয়াদ (ঘন্টা):</label>
+            <select id="drop-expiry" class="select-field">
+              <option value="1">1 ঘন্টা</option>
+              <option value="6">6 ঘন্টা</option>
+              <option value="24" selected>24 ঘন্টা</option>
+              <option value="72">3 দিন</option>
+              <option value="168">7 দিন</option>
+            </select>
+          </label>
+
+          <label>
+            <span>📏 ব্যাসার্ধ (মিটার):</span>
+            <select id="drop-radius" class="select-field">
+              <option value="10">10m</option>
+              <option value="25">25m</option>
+              <option value="50" selected>50m</option>
+              <option value="100">100m</option>
+            </select>
+          </label>
+        </div>
+
+        <button onclick="createGhostDrop()" class="btn-primary">👻 Ghost Drop তৈরি করুন</button>
+      </div>
+
+      <div class="ghost-drops-list" id="ghost-drops-list">
+        <!-- Ghost drops will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settings-screen" class="screen">
+      <div class="app-header">
+        <button onclick="showScreen('home-screen')" class="back-btn">←</button>
+        <h1>⚙️ সেটিংস</h1>
+      </div>
+
+      <div class="settings-content">
+        <div class="settings-group">
+          <h3>প্রোফাইল</h3>
+          <div class="settings-item">
+            <span>👤 নাম:</span>
+            <span id="settings-name">-</span>
+          </div>
+          <div class="settings-item">
+            <span>📱 ফোন:</span>
+            <span id="settings-phone">-</span>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>🫥 Vanish Mode</h3>
+          <div class="settings-item">
+            <span>চালু করুন:</span>
+            <label class="switch">
+              <input type="checkbox" id="vanish-toggle" onchange="toggleVanishMode()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="settings-item">
+            <span>দূরত্ব (মিটার):</span>
+            <select id="vanish-threshold" class="select-field-small">
+              <option value="5">5m</option>
+              <option value="10" selected>10m</option>
+              <option value="20">20m</option>
+              <option value="50">50m</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>🌫️ Ambient Presence</h3>
+          <div class="settings-item">
+            <span>কার্যকলাপ দেখান:</span>
+            <label class="switch">
+              <input type="checkbox" id="ambient-toggle" checked onchange="toggleAmbient()">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <button onclick="logout()" class="btn-danger">লগ আউট</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

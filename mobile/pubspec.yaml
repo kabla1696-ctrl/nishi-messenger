@@ -1,0 +1,124 @@
+name: Nishi_messenger
+description: A revolutionary messaging app with 5 unique features.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  
+  # Navigation
+  go_router: ^13.0.0
+  
+  # UI
+  cupertino_icons: ^1.0.6
+  flutter_animate: ^4.3.0
+  
+  # Network
+  http: ^1.1.0
+  dio: ^5.4.0
+  
+  # Socket.IO
+  socket_io_client: ^2.0.3+1
+  
+  # Storage
+  shared_preferences: ^2.2.2
+  flutter_secure_storage: ^9.0.0
+  
+  # Location
+  geolocator: ^11.0.0
+  geocoding: ^3.0.0
+  
+  # Maps
+  google_maps_flutter: ^2.5.3
+  
+  # Sensors
+  sensors_plus: ^4.0.2
+  
+  # Light sensor
+  light: ^3.0.0
+  
+  # Bluetooth (for proximity)
+  flutter_blue_plus: ^1.28.1
+  
+  # Permissions
+  permission_handler: ^11.1.0
+  
+  # Image
+  image_picker: ^1.0.7
+  cached_network_image: ^3.3.0
+  
+  # Date/Time
+  intl: ^0.19.0
+  
+  # Crypto
+  crypto: ^3.0.3
+  
+  # UUID
+  uuid: ^4.2.1
+  
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  firebase_messaging: ^14.7.9
+  
+  # Local Auth (biometrics)
+  local_auth: ^2.1.7
+  
+  # URL Launcher
+  url_launcher: ^6.2.1
+  
+  # Share
+  share_plus: ^7.2.1
+  
+  # Utils
+  equatable: ^2.0.5
+  collection: ^1.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  # Linting
+  flutter_lints: ^3.0.1
+  
+  # Code Generation
+  build_runner: ^2.4.7
+  riverpod_generator: ^2.3.9
+  
+  # Icons
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/icon.png"
+  adaptive_icon_background: "#1A1A2E"
+  adaptive_icon_foreground: "assets/icons/foreground.png"
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/
+    - assets/icons/
+    - assets/images/
+    - assets/animations/
+  
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
