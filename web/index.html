@@ -1,178 +1,207 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>👻 Nishi Messenger</title>
+  <title>👻 Nishi</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#6C63FF">
+  <meta name="theme-color" content="#0A0A1A">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
   <div id="app">
     <!-- Splash Screen -->
     <div id="splash-screen" class="screen active">
       <div class="splash-content">
-        <div class="splash-logo">👻</div>
+        <div class="splash-ghost-wrap">
+          <div class="splash-ghost">👻</div>
+          <div class="splash-glow"></div>
+        </div>
         <h1 class="splash-title">Nishi</h1>
         <p class="splash-subtitle">Messages that live, breathe, and disappear</p>
-        <div class="splash-loader"></div>
+        <div class="splash-loader">
+          <div class="loader-bar"></div>
+        </div>
       </div>
     </div>
 
     <!-- Auth Screen -->
     <div id="auth-screen" class="screen">
-      <div class="auth-container">
-        <div class="auth-logo">👻</div>
-        <h1>Nishi-তে স্বাগতম</h1>
-        <p>ফোন নম্বর দিয়ে শুরু করুন</p>
+      <div class="auth-container glass-card">
+        <div class="auth-logo-wrap">
+          <div class="auth-ghost">👻</div>
+          <div class="auth-ring"></div>
+        </div>
+        <h1 class="auth-title">Welcome to <span class="gradient-text">Nishi</span></h1>
+        <p class="auth-subtitle">Where messages come alive</p>
         
-        <div id="auth-step1">
-          <input type="text" id="auth-name" placeholder="আপনার নাম" class="input-field">
-          <input type="tel" id="auth-phone" placeholder="ফোন নম্বর (01XXXXXXXXX)" class="input-field">
-          <button onclick="registerUser()" class="btn-primary">শুরু করুন →</button>
+        <div id="auth-step1" class="auth-form">
+          <div class="input-group">
+            <span class="input-icon">👤</span>
+            <input type="text" id="auth-name" placeholder="Your name" class="glass-input">
+          </div>
+          <div class="input-group">
+            <span class="input-icon">📱</span>
+            <input type="tel" id="auth-phone" placeholder="Phone number" class="glass-input">
+          </div>
+          <button onclick="registerUser()" class="btn-glow">
+            <span>Get Started</span>
+            <div class="btn-glow-effect"></div>
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Home Screen -->
     <div id="home-screen" class="screen">
-      <div class="app-header">
-        <h1>👻 Nishi</h1>
-        <div class="header-actions">
-          <button onclick="showScreen('ghost-drop-screen')" class="icon-btn">🗺️</button>
-          <button onclick="showScreen('settings-screen')" class="icon-btn">⚙️</button>
+      <div class="home-header">
+        <div class="header-left">
+          <div class="ghost-mini">👻</div>
+          <h1 class="header-title">Nishi</h1>
+        </div>
+        <div class="header-right">
+          <button onclick="showScreen('ghost-drop-screen')" class="icon-btn-glass">
+            <span>🗺️</span>
+          </button>
+          <button onclick="showScreen('settings-screen')" class="icon-btn-glass">
+            <span>⚙️</span>
+          </button>
         </div>
       </div>
 
-      <div class="chat-list" id="chat-list">
-        <!-- Chats will be loaded here -->
-      </div>
+      <div class="chat-list" id="chat-list"></div>
 
-      <button onclick="showScreen('contacts-screen')" class="fab">+</button>
+      <button onclick="showScreen('contacts-screen')" class="fab-main">
+        <span class="fab-icon">+</span>
+        <div class="fab-glow"></div>
+      </button>
     </div>
 
     <!-- Contacts Screen -->
     <div id="contacts-screen" class="screen">
-      <div class="app-header">
-        <button onclick="showScreen('home-screen')" class="back-btn">←</button>
-        <h1>নতুন চ্যাট</h1>
+      <div class="screen-header">
+        <button onclick="showScreen('home-screen')" class="back-btn-glass">←</button>
+        <h1>New Chat</h1>
       </div>
-      <div id="contacts-list" class="contacts-list">
-        <!-- Contacts will be loaded here -->
-      </div>
+      <div id="contacts-list" class="contacts-list"></div>
     </div>
 
     <!-- Chat Screen -->
     <div id="chat-screen" class="screen">
-      <div class="chat-header">
-        <button onclick="showScreen('home-screen')" class="back-btn">←</button>
-        <div class="chat-header-info">
-          <span id="chat-avatar" class="chat-avatar">👤</span>
+      <div class="chat-screen-header">
+        <button onclick="showScreen('home-screen')" class="back-btn-glass">←</button>
+        <div class="chat-user-info">
+          <div class="avatar-ring" id="chat-avatar-ring">
+            <span id="chat-avatar" class="chat-avatar">👤</span>
+          </div>
           <div>
             <h2 id="chat-name">Chat</h2>
-            <span id="chat-status" class="online-status">offline</span>
+            <span id="chat-status" class="status-dot offline">offline</span>
           </div>
         </div>
-        <div class="chat-header-actions">
-          <button onclick="toggleUniverse()" id="universe-btn" class="universe-toggle">🌍</button>
-        </div>
+        <button onclick="toggleUniverse()" id="universe-btn" class="universe-btn-glass">🌍</button>
       </div>
 
-      <div id="messages-container" class="messages-container">
-        <!-- Messages will be loaded here -->
-      </div>
+      <div id="messages-container" class="messages-container"></div>
 
       <div id="typing-indicator" class="typing-indicator" style="display:none;">
-        <span class="typing-dots">•••</span> টাইপ করছে...
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+        <span>typing</span>
       </div>
 
-      <div class="chat-input-container">
-        <button onclick="toggleScreenshotTrap()" id="trap-btn" class="trap-btn">📸</button>
-        <input type="text" id="message-input" placeholder="মেসেজ লিখুন..." class="message-input" onkeypress="handleKeyPress(event)">
-        <button onclick="sendMessage()" class="send-btn">➤</button>
+      <div class="chat-input-bar">
+        <button onclick="toggleScreenshotTrap()" id="trap-btn" class="trap-btn-glass">📸</button>
+        <div class="input-bar-wrap">
+          <input type="text" id="message-input" placeholder="Message..." class="chat-input-glass" onkeypress="handleKeyPress(event)">
+        </div>
+        <button onclick="sendMessage()" class="send-btn-glass">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
       </div>
     </div>
 
     <!-- Ghost Drop Screen -->
     <div id="ghost-drop-screen" class="screen">
-      <div class="app-header">
-        <button onclick="showScreen('home-screen')" class="back-btn">←</button>
+      <div class="screen-header">
+        <button onclick="showScreen('home-screen')" class="back-btn-glass">←</button>
         <h1>🗺️ Ghost Drop</h1>
       </div>
 
-      <div class="ghost-drop-form">
-        <textarea id="drop-content" placeholder="গোপন মেসেজ লিখুন..." class="input-field"></textarea>
+      <div class="ghost-drop-form glass-card">
+        <textarea id="drop-content" placeholder="Write a secret message..." class="glass-textarea"></textarea>
         
-        <div class="location-info">
-          <p>📍 আপনার অবস্থান:</p>
-          <p id="drop-location" class="location-text">লোড হচ্ছে...</p>
+        <div class="location-badge">
+          <span class="pulse-dot"></span>
+          <span id="drop-location">Getting location...</span>
         </div>
 
-        <div class="drop-options">
-          <label>
-            <span>⏱️ মেয়াদ (ঘন্টা):</label>
-            <select id="drop-expiry" class="select-field">
-              <option value="1">1 ঘন্টা</option>
-              <option value="6">6 ঘন্টা</option>
-              <option value="24" selected>24 ঘন্টা</option>
-              <option value="72">3 দিন</option>
-              <option value="168">7 দিন</option>
+        <div class="drop-grid">
+          <div class="drop-option glass-card-mini">
+            <span class="option-label">⏱️ Expiry</span>
+            <select id="drop-expiry" class="glass-select">
+              <option value="1">1 hour</option>
+              <option value="6">6 hours</option>
+              <option value="24" selected>24 hours</option>
+              <option value="72">3 days</option>
             </select>
-          </label>
-
-          <label>
-            <span>📏 ব্যাসার্ধ (মিটার):</span>
-            <select id="drop-radius" class="select-field">
+          </div>
+          <div class="drop-option glass-card-mini">
+            <span class="option-label">📏 Radius</span>
+            <select id="drop-radius" class="glass-select">
               <option value="10">10m</option>
               <option value="25">25m</option>
               <option value="50" selected>50m</option>
               <option value="100">100m</option>
             </select>
-          </label>
+          </div>
         </div>
 
-        <button onclick="createGhostDrop()" class="btn-primary">👻 Ghost Drop তৈরি করুন</button>
+        <button onclick="createGhostDrop()" class="btn-glow">
+          <span>👻 Create Ghost Drop</span>
+          <div class="btn-glow-effect"></div>
+        </button>
       </div>
 
-      <div class="ghost-drops-list" id="ghost-drops-list">
-        <!-- Ghost drops will be loaded here -->
-      </div>
+      <div class="ghost-drops-list" id="ghost-drops-list"></div>
     </div>
 
     <!-- Settings Screen -->
     <div id="settings-screen" class="screen">
-      <div class="app-header">
-        <button onclick="showScreen('home-screen')" class="back-btn">←</button>
-        <h1>⚙️ সেটিংস</h1>
+      <div class="screen-header">
+        <button onclick="showScreen('home-screen')" class="back-btn-glass">←</button>
+        <h1>⚙️ Settings</h1>
       </div>
 
       <div class="settings-content">
-        <div class="settings-group">
-          <h3>প্রোফাইল</h3>
-          <div class="settings-item">
-            <span>👤 নাম:</span>
-            <span id="settings-name">-</span>
-          </div>
-          <div class="settings-item">
-            <span>📱 ফোন:</span>
-            <span id="settings-phone">-</span>
+        <div class="profile-card glass-card">
+          <div class="profile-avatar-lg">👤</div>
+          <div class="profile-info">
+            <h2 id="settings-name">-</h2>
+            <p id="settings-phone">-</p>
           </div>
         </div>
 
-        <div class="settings-group">
+        <div class="settings-section glass-card">
           <h3>🫥 Vanish Mode</h3>
-          <div class="settings-item">
-            <span>চালু করুন:</span>
-            <label class="switch">
+          <div class="setting-row">
+            <span>Auto-delete near friends</span>
+            <label class="toggle-switch">
               <input type="checkbox" id="vanish-toggle" onchange="toggleVanishMode()">
-              <span class="slider"></span>
+              <span class="toggle-slider"></span>
             </label>
           </div>
-          <div class="settings-item">
-            <span>দূরত্ব (মিটার):</span>
-            <select id="vanish-threshold" class="select-field-small">
+          <div class="setting-row">
+            <span>Distance threshold</span>
+            <select id="vanish-threshold" class="glass-select-sm">
               <option value="5">5m</option>
               <option value="10" selected>10m</option>
               <option value="20">20m</option>
@@ -181,18 +210,18 @@
           </div>
         </div>
 
-        <div class="settings-group">
+        <div class="settings-section glass-card">
           <h3>🌫️ Ambient Presence</h3>
-          <div class="settings-item">
-            <span>কার্যকলাপ দেখান:</span>
-            <label class="switch">
+          <div class="setting-row">
+            <span>Show what you're doing</span>
+            <label class="toggle-switch">
               <input type="checkbox" id="ambient-toggle" checked onchange="toggleAmbient()">
-              <span class="slider"></span>
+              <span class="toggle-slider"></span>
             </label>
           </div>
         </div>
 
-        <button onclick="logout()" class="btn-danger">লগ আউট</button>
+        <button onclick="logout()" class="btn-danger-glass">Log Out</button>
       </div>
     </div>
   </div>
