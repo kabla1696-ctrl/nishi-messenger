@@ -3,8 +3,8 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const path = require('path');
-const { Low } = require('lowdb');
-const { JSONFile } = require('lowdb/node');
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 
@@ -13,38 +13,32 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
 // Config
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const JWT_SECRET = 'nishi-secret-key-2024';
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../../web')));
+app.use(express.static(path.join(__dirname, '../web')));
 
-// Database Setup (lowdb)
-const file = path.join(__dirname, '../../db.json');
-const adapter = new JSONFile(file);
-const db = new Low(adapter, {});
+// Database Setup (lowdb v1)
+const adapter = new FileSync(path.join(__dirname, 'db.json'));
+const db = low(adapter);
 
-async function initDB() {
-  await db.read();
-  // Initialize default data structure if empty
-  if (!db.data) {
-    db.data = {
-      users: [],
-      chats: [],
-      chatMembers: [],
-      messages: [],
-      ghostDrops: [],
-      parallelUniverses: [],
-      screenshotTraps: [],
-      ambientStates: [],
-      proximitySettings: []
-    };
-    await db.write();
-  }
-  console.log('📦 Database loaded');
-}
+// Set defaults
+db.defaults({
+  users: [],
+  chats: [],
+  chatMembers: [],
+  messages: [],
+  ghostDrops: [],
+  parallelUniverses: [],
+  screenshotTraps: [],
+  ambientStates: [],
+  proximitySettings: []
+}).write();
+
+console.log('📦 Database loaded');
 
 // Socket Users Map
 const onlineUsers = new Map();
@@ -52,12 +46,11 @@ const onlineUsers = new Map();
 // ============ AUTH ROUTES ============
 
 // Register
-app.post('/api/auth/register', async (req, res) => {
+app.post('/api/auth/register', (req, res) => {
   try {
-    await db.read();
     const { phone, name } = req.body;
 
-    const existing = db.data.users.find(u => u.phone === phone);
+    const existing = db.get('users').find({ phone }).value();
     if (existing) {
       return res.status(400).json({ error: 'Phone already registered' });
     }
@@ -72,8 +65,7 @@ app.post('/api/auth/register', async (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    db.data.users.push(user);
-    await db.write();
+    db.get('users').push(user).write();
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '30d' });
     res.json({ success: true, token, user });
@@ -83,12 +75,11 @@ app.post('/api/auth/register', async (req, res) => {
 });
 
 // Login
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', (req, res) => {
   try {
-    await db.read();
     const { phone } = req.body;
 
-    const user = db.data.users.find(u => u.phone === phone);
+    const user = db.get('users').find({ phone }).value();
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -101,12 +92,11 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // Get all users
-app.get('/api/users', async (req, res) => {
+app.get('/api/users', (req, res) => {
   try {
-    await db.read();
-    const users = db.data.users.map(u => ({
+    const users = db.get('users').map(u => ({
       id: u.id, name: u.name, avatar: u.avatar, status: u.status
-    }));
+    })).value();
     res.json({ users });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -116,21 +106,24 @@ app.get('/api/users', async (req, res) => {
 // ============ CHAT ROUTES ============
 
 // Create or get 1-on-1 chat
-app.post('/api/chats', async (req, res) => {
+app.post('/api/chats', (req, res) => {
   try {
-    await db.read();
     const { userId, otherUserId } = req.body;
 
-    // Check if chat already exists
-    const existingMemberChats = db.data.chatMembers
+    // Get user's chat IDs
+    const userChatIds = db.get('chatMembers')
       .filter(cm => cm.userId === userId || cm.userId === otherUserId)
-      .map(cm => cm.chatId);
+      .map(cm => cm.chatId)
+      .value();
 
-    const existingChat = db.data.chats.find(c =>
-      !c.isGroup &&
-      existingMemberChats.includes(c.id) &&
-      db.data.chatMembers.filter(cm => cm.chatId === c.id).length === 2
-    );
+    // Find existing 1-on-1 chat
+    const existingChat = db.get('chats')
+      .filter(c => !c.isGroup && userChatIds.includes(c.id))
+      .find(c => {
+        const members = db.get('chatMembers').filter({ chatId: c.id }).value();
+        return members.length === 2;
+      })
+      .value();
 
     if (existingChat) {
       return res.json({ chatId: existingChat.id });
@@ -138,10 +131,9 @@ app.post('/api/chats', async (req, res) => {
 
     // Create new chat
     const chatId = uuidv4();
-    db.data.chats.push({ id: chatId, isGroup: 0, createdAt: new Date().toISOString() });
-    db.data.chatMembers.push({ chatId, userId });
-    db.data.chatMembers.push({ chatId, userId: otherUserId });
-    await db.write();
+    db.get('chats').push({ id: chatId, isGroup: false, createdAt: new Date().toISOString() }).write();
+    db.get('chatMembers').push({ chatId, userId }).write();
+    db.get('chatMembers').push({ chatId, userId: otherUserId }).write();
 
     res.json({ success: true, chatId });
   } catch (error) {
@@ -150,25 +142,27 @@ app.post('/api/chats', async (req, res) => {
 });
 
 // Get user's chats
-app.get('/api/chats/:userId', async (req, res) => {
+app.get('/api/chats/:userId', (req, res) => {
   try {
-    await db.read();
     const { userId } = req.params;
 
-    const userChatIds = db.data.chatMembers
-      .filter(cm => cm.userId === userId)
-      .map(cm => cm.chatId);
+    const userChatIds = db.get('chatMembers')
+      .filter({ userId })
+      .map('chatId')
+      .value();
 
-    const chats = db.data.chats
+    const chats = db.get('chats')
       .filter(c => userChatIds.includes(c.id))
       .map(c => {
-        const members = db.data.chatMembers.filter(cm => cm.chatId === c.id);
+        const members = db.get('chatMembers').filter({ chatId: c.id }).value();
         const otherMember = members.find(m => m.userId !== userId);
-        const otherUser = otherMember ? db.data.users.find(u => u.id === otherMember.userId) : null;
+        const otherUser = otherMember ? db.get('users').getById(otherMember.userId).value() : null;
 
-        const lastMsg = db.data.messages
-          .filter(m => m.chatId === c.id)
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+        const lastMsg = db.get('messages')
+          .filter({ chatId: c.id })
+          .sortBy('createdAt')
+          .last()
+          .value();
 
         return {
           id: c.id,
@@ -181,7 +175,9 @@ app.get('/api/chats/:userId', async (req, res) => {
           otherId: otherUser ? otherUser.id : null
         };
       })
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      .sortBy('createdAt')
+      .reverse()
+      .value();
 
     res.json({ chats });
   } catch (error) {
@@ -192,9 +188,8 @@ app.get('/api/chats/:userId', async (req, res) => {
 // ============ MESSAGE ROUTES ============
 
 // Send message
-app.post('/api/messages', async (req, res) => {
+app.post('/api/messages', (req, res) => {
   try {
-    await db.read();
     const { chatId, senderId, content, type, isScreenshotTrap, decoyContent } = req.body;
 
     const message = {
@@ -203,13 +198,12 @@ app.post('/api/messages', async (req, res) => {
       senderId,
       content,
       type: type || 'text',
-      isScreenshotTrap: isScreenshotTrap ? 1 : 0,
+      isScreenshotTrap: isScreenshotTrap || false,
       decoyContent: decoyContent || null,
       createdAt: new Date().toISOString()
     };
 
-    db.data.messages.push(message);
-    await db.write();
+    db.get('messages').push(message).write();
 
     // Emit to chat members
     io.to(chatId).emit('new_message', message);
@@ -221,22 +215,22 @@ app.post('/api/messages', async (req, res) => {
 });
 
 // Get messages for a chat
-app.get('/api/messages/:chatId', async (req, res) => {
+app.get('/api/messages/:chatId', (req, res) => {
   try {
-    await db.read();
     const { chatId } = req.params;
 
-    const messages = db.data.messages
-      .filter(m => m.chatId === chatId)
+    const messages = db.get('messages')
+      .filter({ chatId })
       .map(m => {
-        const sender = db.data.users.find(u => u.id === m.senderId);
+        const sender = db.get('users').getById(m.senderId).value();
         return {
           ...m,
           senderName: sender ? sender.name : null,
           senderAvatar: sender ? sender.avatar : null
         };
       })
-      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      .sortBy('createdAt')
+      .value();
 
     res.json({ messages });
   } catch (error) {
@@ -247,9 +241,8 @@ app.get('/api/messages/:chatId', async (req, res) => {
 // ============ GHOST DROP ROUTES ============
 
 // Create Ghost Drop
-app.post('/api/ghost-drops', async (req, res) => {
+app.post('/api/ghost-drops', (req, res) => {
   try {
-    await db.read();
     const { userId, content, type, latitude, longitude, radius, expiresIn } = req.body;
 
     const drop = {
@@ -260,14 +253,13 @@ app.post('/api/ghost-drops', async (req, res) => {
       latitude,
       longitude,
       radius: radius || 50,
-      isClaimed: 0,
+      isClaimed: false,
       claimedBy: null,
       expiresAt: expiresIn ? new Date(Date.now() + expiresIn * 60 * 60 * 1000).toISOString() : null,
       createdAt: new Date().toISOString()
     };
 
-    db.data.ghostDrops.push(drop);
-    await db.write();
+    db.get('ghostDrops').push(drop).write();
 
     res.json({ success: true, drop });
   } catch (error) {
@@ -276,10 +268,9 @@ app.post('/api/ghost-drops', async (req, res) => {
 });
 
 // Get all Ghost Drops
-app.get('/api/ghost-drops', async (req, res) => {
+app.get('/api/ghost-drops', (req, res) => {
   try {
-    await db.read();
-    const drops = db.data.ghostDrops.filter(d => !d.isClaimed);
+    const drops = db.get('ghostDrops').filter({ isClaimed: false }).value();
     res.json({ drops });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -287,20 +278,17 @@ app.get('/api/ghost-drops', async (req, res) => {
 });
 
 // Claim Ghost Drop
-app.post('/api/ghost-drops/:id/claim', async (req, res) => {
+app.post('/api/ghost-drops/:id/claim', (req, res) => {
   try {
-    await db.read();
     const { id } = req.params;
     const { userId } = req.body;
 
-    const drop = db.data.ghostDrops.find(d => d.id === id && !d.isClaimed);
+    const drop = db.get('ghostDrops').find({ id, isClaimed: false }).value();
     if (!drop) {
       return res.status(404).json({ error: 'Drop not found or already claimed' });
     }
 
-    drop.isClaimed = 1;
-    drop.claimedBy = userId;
-    await db.write();
+    db.get('ghostDrops').find({ id }).assign({ isClaimed: true, claimedBy: userId }).write();
 
     res.json({ success: true, drop });
   } catch (error) {
@@ -311,9 +299,8 @@ app.post('/api/ghost-drops/:id/claim', async (req, res) => {
 // ============ PARALLEL UNIVERSE ROUTES ============
 
 // Create Parallel Universe Message
-app.post('/api/parallel-universe', async (req, res) => {
+app.post('/api/parallel-universe', (req, res) => {
   try {
-    await db.read();
     const { chatId, realContent, decoyContent } = req.body;
 
     const message = {
@@ -324,8 +311,7 @@ app.post('/api/parallel-universe', async (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    db.data.parallelUniverses.push(message);
-    await db.write();
+    db.get('parallelUniverses').push(message).write();
 
     res.json({ success: true, id: message.id });
   } catch (error) {
@@ -336,12 +322,11 @@ app.post('/api/parallel-universe', async (req, res) => {
 // ============ SCREENSHOT TRAP ROUTES ============
 
 // Report Screenshot
-app.post('/api/screenshot-trap/report', async (req, res) => {
+app.post('/api/screenshot-trap/report', (req, res) => {
   try {
-    await db.read();
     const { messageId, reporterId } = req.body;
 
-    const trap = db.data.screenshotTraps.find(t => t.messageId === messageId);
+    const trap = db.get('screenshotTraps').find({ messageId }).value();
     if (!trap) {
       return res.json({ hasTrap: false });
     }
@@ -358,24 +343,21 @@ app.post('/api/screenshot-trap/report', async (req, res) => {
 // ============ AMBIENT PRESENCE ROUTES ============
 
 // Update Ambient State
-app.post('/api/ambient', async (req, res) => {
+app.post('/api/ambient', (req, res) => {
   try {
-    await db.read();
     const { userId, activity } = req.body;
 
-    const existing = db.data.ambientStates.find(s => s.userId === userId);
+    const existing = db.get('ambientStates').find({ userId }).value();
     if (existing) {
-      existing.activity = activity;
-      existing.lastActive = new Date().toISOString();
+      db.get('ambientStates').find({ userId }).assign({ activity, lastActive: new Date().toISOString() }).write();
     } else {
-      db.data.ambientStates.push({
+      db.get('ambientStates').push({
         userId,
         activity,
         lastActive: new Date().toISOString()
-      });
+      }).write();
     }
 
-    await db.write();
     io.emit('ambient_update', { userId, activity });
     res.json({ success: true });
   } catch (error) {
@@ -386,24 +368,24 @@ app.post('/api/ambient', async (req, res) => {
 // ============ PROXIMITY ROUTES ============
 
 // Update Proximity Settings
-app.post('/api/proximity', async (req, res) => {
+app.post('/api/proximity', (req, res) => {
   try {
-    await db.read();
     const { userId, enabled, vanishThreshold } = req.body;
 
-    const existing = db.data.proximitySettings.find(s => s.userId === userId);
+    const existing = db.get('proximitySettings').find({ userId }).value();
     if (existing) {
-      existing.enabled = enabled ? 1 : 0;
-      existing.vanishThreshold = vanishThreshold || 10;
-    } else {
-      db.data.proximitySettings.push({
-        userId,
-        enabled: enabled ? 1 : 0,
+      db.get('proximitySettings').find({ userId }).assign({
+        enabled: !!enabled,
         vanishThreshold: vanishThreshold || 10
-      });
+      }).write();
+    } else {
+      db.get('proximitySettings').push({
+        userId,
+        enabled: !!enabled,
+        vanishThreshold: vanishThreshold || 10
+      }).write();
     }
 
-    await db.write();
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -450,16 +432,13 @@ io.on('connection', (socket) => {
 
 // ============ START SERVER ============
 
-initDB().then(() => {
-  server.listen(PORT, '0.0.0.0', () => {
-    console.log(`
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`
 ╔══════════════════════════════════════════╗
 ║                                          ║
 ║   👻 Nishi Messenger Server              ║
 ║   🚀 Running on port ${PORT}               ║
-║   📱 Open in browser: localhost:${PORT}    ║
 ║                                          ║
 ╚══════════════════════════════════════════╝
-    `);
-  });
+  `);
 });
